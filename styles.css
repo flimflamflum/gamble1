@@ -152,6 +152,13 @@ main {
     font-size: 1rem;
 }
 
+/* Styling for read-only inputs */
+input[readonly] {
+    background-color: #f5f5f5;
+    color: #666;
+    cursor: not-allowed;
+}
+
 .coin-btn, .swap-btn {
     background-color: #f5f5f5;
     border: none;
