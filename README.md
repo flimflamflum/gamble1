@@ -1,4 +1,4 @@
-# VirtualDice - PrimeDice Clone
+# VirtualDice 
 
 A web-based gambling simulator inspired by PrimeDice, but using virtual currency only. No real money is involved.
 
@@ -28,9 +28,6 @@ The application is built using:
 
 No backend is required as all data is stored in the browser memory.
 
-## Running the Application
-
-Simply open the `index.html` file in a web browser to start using the application.
 
 ## Disclaimer
 
