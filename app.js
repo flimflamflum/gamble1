@@ -40,9 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         profitOnWin: 98,
         winChance: 50,
         isRollOver: true,
-        rollValue: 47.99,
+        rollValue: 50,  // Fixed: Set to 100 - winChance
         multiplier: 1.98,
-        lastSliderValue: 48,
+        lastSliderValue: 50,  // Updated to match roll value
         audioCtx: null,
         minWinChance: 2,    // Minimum win chance
         maxWinChance: 98,   // Maximum win chance
@@ -58,10 +58,23 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
 
     function initializeApp() {
+        // Ensure rollValue is consistent with winChance on startup
+        state.rollValue = (100 - state.winChance).toFixed(2);
+        
+        // Make input fields for roll value, multiplier, and win chance read-only
+        rollValueInput.readOnly = true;
+        multiplierValueInput.readOnly = true; 
+        winChanceInput.readOnly = true;
+        
+        // Add titles to explain that these can only be changed via slider
+        rollValueInput.title = "Adjust using the slider below";
+        multiplierValueInput.title = "Adjust using the slider below";
+        winChanceInput.title = "Adjust using the slider below";
+        
         updateUI();
         setupEventListeners();
         createFallbackTickSound();
-        updateSlider(state.rollValue);
+        updateSlider(parseFloat(state.rollValue));
         updateHistoryStats();
     }
 
@@ -192,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update inputs
         betAmountInput.value = state.betAmount;
         profitAmountInput.value = state.profitOnWin;
-        rollValueInput.value = state.rollValue.toFixed(2);
+        rollValueInput.value = state.rollValue;  // Already formatted as toFixed(2) when set
         multiplierValueInput.value = state.multiplier.toFixed(4);
         winChanceInput.value = state.winChance; // Show as whole number
     }
@@ -282,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update UI and slider
         updateUI();
-        updateSlider(state.rollValue);
+        updateSlider(parseFloat(state.rollValue));
     }
 
     function setupEventListeners() {
@@ -303,103 +316,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUI();
         }
 
-        // Win chance changes
-        winChanceInput.addEventListener('input', updateWinChance);
-        winChanceInput.addEventListener('change', updateWinChance);
-
-        function updateWinChance() {
-            let value = parseFloat(winChanceInput.value);
-            if (isNaN(value)) value = 50;
-            
-            // Round to whole percentage
-            value = roundToWholePercent(value);
-            
-            // Ensure within bounds
-            if (value < state.minWinChance) value = state.minWinChance;
-            if (value > state.maxWinChance) value = state.maxWinChance;
-            
-            state.winChance = value;
-            
-            // Recalculate roll value
-            state.rollValue = (100 - state.winChance).toFixed(2);
-            
-            // Calculate multiplier based on win chance (with house edge)
-            state.multiplier = (99 / state.winChance);
-            state.profitOnWin = Math.floor(state.betAmount * (state.multiplier - 1));
-            
-            // Update UI and slider position
-            updateUI();
-            updateSlider(parseFloat(state.rollValue));
-        }
-
-        // Roll value changes
-        rollValueInput.addEventListener('input', updateRollValue);
-        rollValueInput.addEventListener('change', updateRollValue);
-
-        function updateRollValue() {
-            let value = parseFloat(rollValueInput.value);
-            if (isNaN(value) || value < 0.01) value = 0.01;
-            if (value > 99.99) value = 99.99;
-            
-            // Calculate what win chance would be
-            let newWinChance = (100 - value);
-            
-            // Round to whole percentage
-            newWinChance = roundToWholePercent(newWinChance);
-            
-            // Ensure resulting win chance will be within bounds
-            if (newWinChance < state.minWinChance) {
-                newWinChance = state.minWinChance;
-            } else if (newWinChance > state.maxWinChance) {
-                newWinChance = state.maxWinChance;
-            }
-            
-            // Update roll value based on rounded win chance
-            state.rollValue = (100 - newWinChance).toFixed(2);
-            state.winChance = newWinChance;
-            
-            // Calculate multiplier based on win chance
-            state.multiplier = (99 / state.winChance);
-            state.profitOnWin = Math.floor(state.betAmount * (state.multiplier - 1));
-            
-            // Update UI and slider
-            updateUI();
-            updateSlider(parseFloat(state.rollValue));
-        }
-
-        // Multiplier value changes
-        multiplierValueInput.addEventListener('input', updateMultiplier);
-        multiplierValueInput.addEventListener('change', updateMultiplier);
-
-        function updateMultiplier() {
-            let value = parseFloat(multiplierValueInput.value);
-            if (isNaN(value) || value < 1.01) value = 1.01;
-            
-            // Calculate win chance from multiplier: 99 / multiplier
-            let newWinChance = (99 / value);
-            
-            // Round to whole percentage
-            newWinChance = roundToWholePercent(newWinChance);
-            
-            // Enforce min/max win chance
-            if (newWinChance < state.minWinChance) {
-                newWinChance = state.minWinChance;
-            } else if (newWinChance > state.maxWinChance) {
-                newWinChance = state.maxWinChance;
-            }
-            
-            // Recalculate multiplier from rounded win chance
-            value = 99 / newWinChance;
-            
-            state.winChance = newWinChance;
-            state.multiplier = value;
-            state.rollValue = (100 - newWinChance).toFixed(2);
-            state.profitOnWin = Math.floor(state.betAmount * (state.multiplier - 1));
-            
-            // Update UI and slider
-            updateUI();
-            updateSlider(parseFloat(state.rollValue));
-        }
+        // Remove event listeners for roll value, multiplier, and win chance inputs
+        // Win chance input - event listeners removed
+        // Roll value input - event listeners removed
+        // Multiplier value input - event listeners removed
 
         // Quick bet options
         halfBetButton.addEventListener('click', () => {
@@ -549,9 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 rollValueInput.value = state.rollValue;
                 multiplierValueInput.value = state.multiplier.toFixed(4);
                 winChanceInput.value = state.winChance;
-                
-                // Use the full updateUI function instead of just updateStats
-                updateUI();
             } catch (error) {
                 console.error("Error in updateSliderVisually:", error);
             }
@@ -589,7 +506,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const rollResult = parseFloat(roll.toFixed(2));
             
             // Determine if the bet is a win or loss (always Roll Over)
-            const isWin = rollResult > state.rollValue;
+            // We win when the roll result is GREATER than the rollValue
+            const isWin = rollResult > parseFloat(state.rollValue);
             
             // Calculate profit
             const profit = isWin ? state.profitOnWin : -state.betAmount;
