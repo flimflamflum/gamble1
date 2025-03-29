@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtualDice - PrimeDice Clone</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <header>
+            <div class="logo">
+                <h1>VirtualDice</h1>
+            </div>
+            <div class="header-controls">
+                <div class="balance-display">
+                    <div class="balance-amount">
+                        <span id="header-balance">10000</span>
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="betting-container">
+                <div class="betting-card">
+                    <div class="betting-inputs">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <div class="input-label">
+                                    <span>Bet Amount</span>
+                                    <span class="amount-label">10000</span>
+                                </div>
+                                <div class="amount-input-container">
+                                    <input type="text" id="bet-amount" value="100">
+                                    <button class="coin-btn"><i class="fa-solid fa-coins"></i></button>
+                                </div>
+                                <div class="quick-buttons">
+                                    <button id="half-bet">½</button>
+                                    <button id="double-bet">2×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <div class="input-label">
+                                    <span>Profit on Win</span>
+                                    <span class="profit-label">198</span>
+                                </div>
+                                <div class="profit-input-container">
+                                    <input type="text" id="profit-amount" value="198" readonly>
+                                    <button class="coin-btn"><i class="fa-solid fa-coins"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="input-row three-columns">
+                            <div class="input-group">
+                                <div class="input-label">Roll Over</div>
+                                <div class="roll-input-container">
+                                    <input type="text" id="roll-value" value="47.99">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <div class="input-label">Multiplier</div>
+                                <div class="multiplier-input-container">
+                                    <input type="text" id="multiplier-value" value="1.98">
+                                    <span class="multiplier-symbol">×</span>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <div class="input-label">Win Chance</div>
+                                <div class="chance-input-container">
+                                    <input type="text" id="win-chance" value="50">
+                                    <span class="percentage-symbol">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="roll-dice" class="roll-button">ROLL DICE</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slider-container">
+                <div class="slider-value left">0</div>
+                <div class="slider">
+                    <div class="slider-track">
+                        <div class="slider-track-inner">
+                            <div class="slider-track-loss"></div>
+                            <div class="slider-track-win"></div>
+                        </div>
+                        <div class="slider-handle" id="slider-handle"></div>
+                    </div>
+                    <div class="result-bubble hidden" id="result-bubble">
+                        <span id="bubble-result">80.93</span>
+                    </div>
+                </div>
+                <div class="slider-value right">100</div>
+            </div>
+            
+            <!-- Betting History Section -->
+            <div class="history-container">
+                <div class="history-header">
+                    <h2>Betting History</h2>
+                    <div class="history-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Wins:</span>
+                            <span id="win-count" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Losses:</span>
+                            <span id="loss-count" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Profit:</span>
+                            <span id="total-profit" class="stat-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="history-list" id="history-list">
+                    <!-- History items will be added dynamically -->
+                    <div class="no-history">Your betting history will appear here</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="tick-sound" preload="auto">
+        <source src="tick.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="win-sound" preload="auto">
+        <source src="win.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="loss-sound" preload="auto">
+        <source src="loss.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="app.js"></script>
+</body>
+</html> 

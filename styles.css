@@ -1,0 +1,546 @@
+:root {
+    /* Light theme colors (default) */
+    --primary-color: #4c6ef5;
+    --secondary-color: #5a67d8;
+    --background-color: #121263;
+    --card-bg-color: #ffffff;
+    --dark-card-bg-color: #111133;
+    --text-color: #f8f9fa;
+    --dark-text-color: #333;
+    --accent-color: #02cc9b;
+    --danger-color: #e03131;
+    --border-color: #2d2d2d;
+    --slider-color: #02cc9b;
+    --slider-handle-color: #ffffff;
+    --slider-loss-color: #e03131;
+    --slider-win-color: #02cc9b;
+    --button-color: #ff9800;
+    --input-bg-color: #ffffff;
+    --input-border-color: #e0e0e0;
+    --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --history-bg-color: rgba(0, 0, 0, 0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--background-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo h1 {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.balance-display {
+    display: flex;
+    align-items: center;
+}
+
+.balance-amount {
+    background-color: var(--button-color);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.balance-amount i {
+    font-size: 0.9rem;
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Betting Container */
+.betting-container {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.betting-card {
+    flex: 1;
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.betting-inputs {
+    padding: 1.5rem;
+    padding-top: 1.5rem;
+}
+
+.input-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.input-row.three-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-label {
+    display: flex;
+    justify-content: space-between;
+    color: var(--dark-text-color);
+    font-size: 0.9rem;
+}
+
+.amount-label, .profit-label {
+    opacity: 0.6;
+}
+
+.amount-input-container, .profit-input-container, .roll-input-container, .multiplier-input-container, .chance-input-container {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.amount-input-container input, .profit-input-container input, .roll-input-container input, .multiplier-input-container input, .chance-input-container input {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.coin-btn, .swap-btn {
+    background-color: #f5f5f5;
+    border: none;
+    padding: 0 1rem;
+    color: #666;
+    cursor: pointer;
+}
+
+.percentage-symbol, .multiplier-symbol {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.quick-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.quick-buttons button {
+    background-color: #f5f5f5;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--dark-text-color);
+}
+
+.roll-button {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--button-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    margin-top: 1rem;
+}
+
+/* Slider */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+}
+
+.slider-value {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.slider {
+    flex: 1;
+    position: relative;
+}
+
+.slider-track {
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.slider-track-inner {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.slider-track-loss, .slider-track-win {
+    height: 100%;
+    position: absolute;
+    top: 0;
+}
+
+.slider-track-loss {
+    background-color: var(--slider-loss-color);
+}
+
+.slider-track-win {
+    background-color: var(--slider-win-color);
+}
+
+.slider-handle {
+    width: 24px;
+    height: 24px;
+    background-color: var(--slider-handle-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 48%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Result Display */
+.result-display {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+    color: var(--dark-text-color);
+}
+
+.result-display.hidden {
+    display: none;
+}
+
+.result-number {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.result-message {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.result-message.win {
+    color: var(--accent-color);
+}
+
+.result-message.lose {
+    color: var(--danger-color);
+}
+
+.result-details {
+    font-size: 1.5rem;
+}
+
+/* Result Bubble (Similar to PrimeDice) */
+.result-bubble {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: var(--dark-text-color);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    min-width: 80px;
+    text-align: center;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.result-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+}
+
+.result-bubble.hidden {
+    display: none;
+}
+
+.result-bubble.win #bubble-result {
+    color: var(--accent-color);
+}
+
+.result-bubble.loss #bubble-result {
+    color: var(--danger-color);
+}
+
+/* Add hexagon shape around the result (like in PrimeDice) */
+.result-bubble.win::before, 
+.result-bubble.loss::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.05);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    z-index: -1;
+    border-radius: 4px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .betting-container {
+        flex-direction: column;
+    }
+    
+    .input-row.three-columns {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 1rem;
+    }
+    
+    .betting-inputs {
+        padding: 1rem;
+    }
+    
+    .input-row {
+        flex-direction: column;
+    }
+    
+    .slider-container {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Header controls */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Betting History */
+.history-container {
+    background-color: var(--history-bg-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.history-header h2 {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.history-stats {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-label {
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    font-weight: bold;
+}
+
+.history-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+}
+
+.history-item.win {
+    border-left: 3px solid var(--slider-win-color);
+}
+
+.history-item.loss {
+    border-left: 3px solid var(--slider-loss-color);
+}
+
+.bet-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.bet-amount {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.bet-result {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.bet-profit {
+    font-weight: bold;
+}
+
+.bet-profit.positive {
+    color: var(--slider-win-color);
+}
+
+.bet-profit.negative {
+    color: var(--slider-loss-color);
+}
+
+.no-history {
+    padding: 1rem;
+    text-align: center;
+    opacity: 0.6;
+    font-style: italic;
+}
+
+/* Custom scrollbar for history */
+.history-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Add colored classes for stats */
+.positive {
+    color: var(--slider-win-color);
+}
+
+.negative {
+    color: var(--slider-loss-color);
+}
+
+/* Animated elements */
+.roll-button:active {
+    transform: scale(0.98);
+}
+
+.balance-amount {
+    transition: background-color 0.3s;
+}
+
+/* Transitions for theme changes */
+body, .betting-card, .slider-container, .history-container,
+input, button, .slider-handle, .slider-track-loss, .slider-track-win {
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+} 
