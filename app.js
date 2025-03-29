@@ -52,6 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         lossCount: 0,       // Number of losses
         totalProfit: 0,     // Total profit
         isAnimating: false, // Animation state
+        lastClickTime: 0,   // To track last click time for debounce
+        clickDebounceTime: 200, // Minimum time between roll clicks (ms)
+        pendingBets: 0,     // Counter for pending bets to ensure proper state management
     };
 
     // Initialize the app
@@ -342,14 +345,40 @@ document.addEventListener('DOMContentLoaded', () => {
             updateUI();
         });
 
-        // Roll dice button
+        // Roll dice button with debounce to prevent spam clicking
         rollDiceButton.addEventListener('click', () => {
+            const now = Date.now();
+            
+            // If the button is disabled or we're still animating or we're within debounce time, exit early
+            if (rollDiceButton.disabled || 
+                state.isAnimating || 
+                state.pendingBets > 0 || 
+                now - state.lastClickTime < state.clickDebounceTime) {
+                return;
+            }
+            
+            // Update last click time for debounce
+            state.lastClickTime = now;
+            
             if (state.betAmount > state.balance) {
                 alert('Not enough balance');
                 return;
             }
             
-            rollDice();
+            // Immediately disable the button and set animation state
+            rollDiceButton.disabled = true;
+            state.isAnimating = true;
+            state.pendingBets++;
+            
+            // Immediately deduct the bet amount from balance to prevent race conditions
+            // This happens before the roll so quick clicks can't exploit balance checks
+            state.balance -= state.betAmount;
+            
+            // Update UI to reflect the deducted amount before rolling
+            updateUI();
+            
+            // Proceed with roll after a small delay to ensure UI updates
+            setTimeout(() => rollDice(), 10);
         });
         
         // Slider drag functionality
@@ -480,14 +509,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function rollDice() {
-        // Check if already animating
-        if (state.isAnimating) return;
-        state.isAnimating = true;
-
         try {
             // Check if required elements exist
             if (!rollDiceButton || !resultBubbleElement) {
                 console.error("Required DOM elements not found");
+                state.pendingBets--;
+                state.isAnimating = state.pendingBets > 0;
+                if (rollDiceButton) rollDiceButton.disabled = false;
                 return;
             }
             
@@ -497,8 +525,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.resultBubbleTimer = null;
             }
             
-            // Disable roll button during processing
-            rollDiceButton.disabled = true;
             rollDiceButton.textContent = 'ROLLING...';
             
             // Generate a random number between 0 and 100
@@ -509,12 +535,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // We win when the roll result is GREATER than the rollValue
             const isWin = rollResult > parseFloat(state.rollValue);
             
-            // Calculate profit
-            const profit = isWin ? state.profitOnWin : -state.betAmount;
+            // Calculate profit - we already deducted the bet amount, so just add winnings if won
+            const profit = isWin ? state.profitOnWin + state.betAmount : 0;
             
-            // Update state
-            const oldBalance = state.balance;
-            state.balance += profit;
+            // Update state with winnings (if any)
+            if (isWin) {
+                state.balance += profit;
+            }
             
             // Play appropriate sound
             if (isWin) {
@@ -530,8 +557,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show result bubble
             resultBubbleElement.classList.remove('hidden');
             
-            // Add to history
-            addToHistory(state.betAmount, rollResult, isWin, profit);
+            // Add to history - calculate profit for history display
+            const profitForHistory = isWin ? state.profitOnWin : -state.betAmount;
+            addToHistory(state.betAmount, rollResult, isWin, profitForHistory);
             
             // Set a timer to hide the bubble after 5 seconds
             state.resultBubbleTimer = setTimeout(() => {
@@ -544,12 +572,17 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error in rollDice:", error);
         } finally {
-            // Re-enable roll button - this will run even if there's an error
-            if (rollDiceButton) {
+            // Update pending bets counter
+            state.pendingBets--;
+            
+            // Only set isAnimating to false if there are no more pending bets
+            state.isAnimating = state.pendingBets > 0;
+            
+            // Re-enable roll button if no more animations are running
+            if (!state.isAnimating && rollDiceButton) {
                 rollDiceButton.disabled = false;
                 rollDiceButton.textContent = 'ROLL DICE';
             }
-            state.isAnimating = false;
         }
     }
 
