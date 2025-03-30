@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rollDiceButton = document.getElementById('roll-dice');
     const halfBetButton = document.getElementById('half-bet');
     const doubleBetButton = document.getElementById('double-bet');
+    const maxBetButton = document.getElementById('max-bet');
     const swapButton = document.querySelector('.swap-btn');
     
     // DOM Elements - Balance
@@ -337,6 +338,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         doubleBetButton.addEventListener('click', () => {
             state.betAmount = Math.min(state.balance, state.betAmount * 2);
+            
+            // Calculate profit directly
+            state.multiplier = (99 / state.winChance);
+            state.profitOnWin = Math.floor(state.betAmount * (state.multiplier - 1));
+            
+            updateUI();
+        });
+
+        maxBetButton.addEventListener('click', () => {
+            state.betAmount = state.balance;
             
             // Calculate profit directly
             state.multiplier = (99 / state.winChance);
