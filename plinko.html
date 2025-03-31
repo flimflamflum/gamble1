@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="plinko.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <a href="index.html" class="logo">Virtual Casino</a>
+            <div class="nav-right">
+                <div class="balance-display">
+                    <div class="balance-amount">
+                        <span id="header-balance">10000</span>
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <button id="reset-balance" class="reset-balance-btn">
+                        <i class="fa-solid fa-rotate"></i>
+                        Reset
+                    </button>
+                </div>
+                <div class="nav-buttons">
+                    <button class="login-btn">Login</button>
+                    <button class="register-btn">Register</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="game-container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- Game Mode Toggle -->
+            <div class="mode-toggle">
+                <button class="active">Manual</button>
+                <button>Auto</button>
+            </div>
+
+            <!-- Bet Amount -->
+            <div class="bet-controls">
+                <label>Bet Amount</label>
+                <div class="bet-amount">
+                    <input type="number" id="bet-amount" value="100" step="1">
+                    <button id="half-bet">½</button>
+                    <button id="double-bet">2×</button>
+                    <button id="max-bet">Max</button>
+                </div>
+            </div>
+
+            <!-- Risk Level -->
+            <div class="risk-controls">
+                <label>Risk</label>
+                <select id="risk-level">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+
+            <!-- Rows -->
+            <div class="rows-controls">
+                <label>Rows</label>
+                <select id="rows">
+                    <option value="8">8</option>
+                    <option value="12">12</option>
+                    <option value="16" selected>16</option>
+                </select>
+            </div>
+
+            <!-- Bet Button -->
+            <button id="bet-button" class="bet-button">BET</button>
+        </div>
+
+        <!-- Plinko Board -->
+        <div class="plinko-board">
+            <canvas id="plinkoCanvas"></canvas>
+            <div class="multipliers">
+                <!-- Multipliers will be added dynamically via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="balance.js"></script>
+    <script src="plinko.js"></script>
+</body>
+</html> 

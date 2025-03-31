@@ -36,26 +36,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // App State
     let state = {
-        balance: 10000,
         betAmount: 100,
         profitOnWin: 98,
         winChance: 50,
         isRollOver: true,
-        rollValue: 50,  // Fixed: Set to 100 - winChance
+        rollValue: 50,
         multiplier: 1.98,
-        lastSliderValue: 50,  // Updated to match roll value
+        lastSliderValue: 50,
         audioCtx: null,
-        minWinChance: 2,    // Minimum win chance
-        maxWinChance: 98,   // Maximum win chance
-        resultBubbleTimer: null, // Timer for the result bubble
-        history: [],        // Betting history
-        winCount: 0,        // Number of wins
-        lossCount: 0,       // Number of losses
-        totalProfit: 0,     // Total profit
-        isAnimating: false, // Animation state
-        lastClickTime: 0,   // To track last click time for debounce
-        clickDebounceTime: 200, // Minimum time between roll clicks (ms)
-        pendingBets: 0,     // Counter for pending bets to ensure proper state management
+        minWinChance: 2,
+        maxWinChance: 98,
+        resultBubbleTimer: null,
+        history: [],
+        winCount: 0,
+        lossCount: 0,
+        totalProfit: 0,
+        isAnimating: false,
+        lastClickTime: 0,
+        clickDebounceTime: 200,
+        pendingBets: 0,
     };
 
     // Initialize the app
@@ -201,17 +200,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateUI() {
-        // Update balance displays with animation
-        animateBalanceChange(headerBalanceElement, state.balance);
-        animateBalanceChange(document.querySelector('.amount-label'), state.balance);
-        document.querySelector('.profit-label').textContent = state.profitOnWin.toFixed(0);
+        // Get current balance
+        const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
         
-        // Update inputs
+        // Ensure bet amount doesn't exceed balance
+        if (state.betAmount > currentBalance) {
+            state.betAmount = Math.floor(currentBalance);
+            // Recalculate profit
+            state.multiplier = (99 / state.winChance);
+            state.profitOnWin = Math.floor(state.betAmount * (state.multiplier - 1));
+        }
+        
+        // Update all balance displays
+        headerBalanceElement.textContent = currentBalance;
+        document.querySelector('.amount-label').textContent = currentBalance;
+        
+        // Update betting inputs with validated values
         betAmountInput.value = state.betAmount;
         profitAmountInput.value = state.profitOnWin;
-        rollValueInput.value = state.rollValue;  // Already formatted as toFixed(2) when set
+        rollValueInput.value = state.rollValue;
         multiplierValueInput.value = state.multiplier.toFixed(4);
-        winChanceInput.value = state.winChance; // Show as whole number
+        winChanceInput.value = state.winChance;
     }
 
     function animateBalanceChange(element, newValue) {
@@ -310,8 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
         function updateBetAmount() {
             let value = parseFloat(betAmountInput.value);
             if (isNaN(value) || value < 1) value = 1;
-            if (value > state.balance) value = state.balance;
-            state.betAmount = value;
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+            if (value > currentBalance) value = currentBalance;
+            state.betAmount = Math.floor(value); // Ensure whole number
             
             // Calculate profit directly
             state.multiplier = (99 / state.winChance);
@@ -337,7 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         doubleBetButton.addEventListener('click', () => {
-            state.betAmount = Math.min(state.balance, state.betAmount * 2);
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+            state.betAmount = Math.min(currentBalance, Math.floor(state.betAmount * 2));
             
             // Calculate profit directly
             state.multiplier = (99 / state.winChance);
@@ -347,13 +358,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         maxBetButton.addEventListener('click', () => {
-            state.betAmount = state.balance;
-            
-            // Calculate profit directly
-            state.multiplier = (99 / state.winChance);
-            state.profitOnWin = Math.floor(state.betAmount * (state.multiplier - 1));
-            
-            updateUI();
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+            if (currentBalance > 0) {
+                state.betAmount = Math.floor(currentBalance); // Ensure whole number
+                
+                // Calculate profit directly
+                state.multiplier = (99 / state.winChance);
+                state.profitOnWin = Math.floor(state.betAmount * (state.multiplier - 1));
+                
+                updateUI();
+            }
         });
 
         // Roll dice button with debounce to prevent spam clicking
@@ -529,6 +543,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (rollDiceButton) rollDiceButton.disabled = false;
                 return;
             }
+
+            // Get current balance
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+
+            // Check if enough balance for bet
+            if (state.betAmount > currentBalance) {
+                alert('Not enough balance for this bet!');
+                state.pendingBets--;
+                state.isAnimating = false;
+                rollDiceButton.disabled = false;
+                return;
+            }
             
             // First, clear any existing timers and hide any existing bubbles
             if (state.resultBubbleTimer) {
@@ -538,27 +564,27 @@ document.addEventListener('DOMContentLoaded', () => {
             
             rollDiceButton.textContent = 'ROLLING...';
             
+            // Deduct bet amount immediately
+            const balanceAfterBet = currentBalance - state.betAmount;
+            window.updateBalance(balanceAfterBet);
+            
             // Generate a random number between 0 and 100
             const roll = Math.random() * 100;
             const rollResult = parseFloat(roll.toFixed(2));
             
             // Determine if the bet is a win or loss (always Roll Over)
-            // We win when the roll result is GREATER than the rollValue
             const isWin = rollResult > parseFloat(state.rollValue);
             
-            // Calculate profit - we already deducted the bet amount, so just add winnings if won
-            const profit = isWin ? state.profitOnWin + state.betAmount : 0;
-            
-            // Update state with winnings (if any)
+            // Calculate new balance based on win/loss
+            let newBalance = balanceAfterBet;
             if (isWin) {
-                state.balance += profit;
-            }
-            
-            // Play appropriate sound
-            if (isWin) {
-                playWinSound(); // Play win sound
+                // If win, add original bet back plus profit
+                newBalance += state.betAmount + state.profitOnWin;
+                window.updateBalance(newBalance);
+                playWinSound();
             } else {
-                playLossSound(); // Play loss sound
+                // Bet amount already deducted
+                playLossSound();
             }
             
             // Position the bubble above the result value on the slider
@@ -568,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show result bubble
             resultBubbleElement.classList.remove('hidden');
             
-            // Add to history - calculate profit for history display
+            // Add to history
             const profitForHistory = isWin ? state.profitOnWin : -state.betAmount;
             addToHistory(state.betAmount, rollResult, isWin, profitForHistory);
             
@@ -583,13 +609,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error in rollDice:", error);
         } finally {
-            // Update pending bets counter
             state.pendingBets--;
-            
-            // Only set isAnimating to false if there are no more pending bets
             state.isAnimating = state.pendingBets > 0;
-            
-            // Re-enable roll button if no more animations are running
             if (!state.isAnimating && rollDiceButton) {
                 rollDiceButton.disabled = false;
                 rollDiceButton.textContent = 'ROLL DICE';
