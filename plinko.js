@@ -1582,7 +1582,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('risk-level').addEventListener('change', (e) => {
-        state.risk = e.target.value;
+        // Force medium risk mode only
+        e.target.value = 'medium';
+        state.risk = 'medium';
         setupWorld();
     });
 

@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const balanceElement = document.getElementById('header-balance');
     const resetButton = document.getElementById('reset-balance');
     const bettingContainer = document.querySelector('.betting-container');
+    const gameBalanceEl = document.getElementById('game-balance');
     
-    // Initialize balance if it doesn't exist
+    // Initialize balance if it doesn't exist (only on first run)
     if (!localStorage.getItem('userBalance')) {
         localStorage.setItem('userBalance', '10000');
     }
@@ -26,6 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to update balance
     window.updateBalance = function(newBalance) {
+        if (typeof newBalance === 'undefined') {
+            // If no new balance provided, just update displays using current value
+            updateBalanceDisplay();
+            return;
+        }
+        
         localStorage.setItem('userBalance', newBalance.toString());
         updateBalanceDisplay();
         
@@ -41,8 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to update balance display
     function updateBalanceDisplay() {
-        const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+        // Don't provide fallback value - if balance is 0, show 0
+        const currentBalance = parseInt(localStorage.getItem('userBalance')) || 0;
         balanceElement.textContent = currentBalance;
+        
+        // Also update game-specific balance display if it exists
+        if (gameBalanceEl) {
+            gameBalanceEl.textContent = currentBalance.toFixed(2);
+        }
         
         // Check for zero balance on initial load
         if (bettingContainer && currentBalance <= 0) {

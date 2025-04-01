@@ -56,6 +56,17 @@
                         <span class="count">0</span> playing
                     </div>
                 </a>
+                <a href="mines.html" class="game-card">
+                    <div class="game-image">
+                        <img src="gem.svg" alt="Mines">
+                    </div>
+                    <div class="game-title">MINES</div>
+                    <div class="game-provider">VIRTUAL CASINO</div>
+                    <div class="player-count">
+                        <span class="online-indicator"></span>
+                        <span class="count">0</span> playing
+                    </div>
+                </a>
             </div>
         </section>
     </main>
@@ -64,8 +75,10 @@
     <script>
         // Simple script to simulate random player count
         function updatePlayerCount() {
-            const count = document.querySelector('.count');
-            count.textContent = Math.floor(Math.random() * 1000) + 500; // Random number between 500-1500
+            const counts = document.querySelectorAll('.count');
+            counts.forEach(count => {
+                count.textContent = Math.floor(Math.random() * 1000) + 500; // Random number between 500-1500
+            });
         }
         
         // Update initially and every 30 seconds

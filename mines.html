@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mines Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mines.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <a href="index.html" class="logo">Virtual Casino</a>
+            <div class="nav-right">
+                <div class="balance-display">
+                    <div class="balance-amount">
+                        <span id="header-balance">10000</span>
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <button id="reset-balance" class="reset-balance-btn">
+                        <i class="fa-solid fa-rotate"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="game-container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- Game Mode Toggle -->
+            <div class="mode-toggle">
+                <button id="manual-button" class="active">Manual</button>
+                <button id="auto-button">Auto</button>
+            </div>
+
+            <!-- Bet Amount -->
+            <div class="bet-controls">
+                <label>Bet Amount</label>
+                <div class="bet-info">$<span id="bet-display">0.00</span></div>
+                <div class="bet-amount">
+                    <input type="number" id="bet-amount" value="100" step="1">
+                    <div class="bet-buttons">
+                        <button id="half-bet">½</button>
+                        <button id="double-bet">2×</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Balance -->
+            <div class="balance-controls">
+                <label>Current Balance</label>
+                <div class="balance-info">$<span id="game-balance">10000.00</span></div>
+            </div>
+
+            <!-- Mines Settings -->
+            <div class="mines-controls">
+                <label>Mines</label>
+                <div class="mines-input">
+                    <input type="number" id="mines-count" value="3" min="1" max="24">
+                </div>
+            </div>
+
+            <!-- Gems Settings -->
+            <div class="mines-controls">
+                <label>Gems</label>
+                <div class="mines-input">
+                    <input type="number" id="gems-count" value="21" readonly>
+                </div>
+            </div>
+
+            <!-- Total Profit -->
+            <div class="profit-controls">
+                <label>Total profit (1.13×)</label>
+                <div class="profit-info">$<span id="profit-display">0.00</span></div>
+                <div class="profit-amount">
+                    <input type="number" id="profit-amount" value="0" readonly>
+                </div>
+            </div>
+
+            <!-- Game Buttons -->
+            <div class="game-buttons">
+                <button id="bet-button" class="bet-button">Bet</button>
+                <button id="cashout-button" class="cashout-button" disabled>Cashout</button>
+            </div>
+        </div>
+
+        <!-- Mines Board -->
+        <div class="mines-board">
+            <div class="mines-grid" id="mines-grid">
+                <!-- 5x5 grid = 25 tiles -->
+                <!-- Row 1 -->
+                <div class="tile" data-index="0"></div>
+                <div class="tile" data-index="1"></div>
+                <div class="tile" data-index="2"></div>
+                <div class="tile" data-index="3"></div>
+                <div class="tile" data-index="4"></div>
+                <!-- Row 2 -->
+                <div class="tile" data-index="5"></div>
+                <div class="tile" data-index="6"></div>
+                <div class="tile" data-index="7"></div>
+                <div class="tile" data-index="8"></div>
+                <div class="tile" data-index="9"></div>
+                <!-- Row 3 -->
+                <div class="tile" data-index="10"></div>
+                <div class="tile" data-index="11"></div>
+                <div class="tile" data-index="12"></div>
+                <div class="tile" data-index="13"></div>
+                <div class="tile" data-index="14"></div>
+                <!-- Row 4 -->
+                <div class="tile" data-index="15"></div>
+                <div class="tile" data-index="16"></div>
+                <div class="tile" data-index="17"></div>
+                <div class="tile" data-index="18"></div>
+                <div class="tile" data-index="19"></div>
+                <!-- Row 5 -->
+                <div class="tile" data-index="20"></div>
+                <div class="tile" data-index="21"></div>
+                <div class="tile" data-index="22"></div>
+                <div class="tile" data-index="23"></div>
+                <div class="tile" data-index="24"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="click-sound" preload="auto">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="gem-sound" preload="auto">
+        <source src="gem.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="mine-sound" preload="auto">
+        <source src="mine.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="cashout-sound" preload="auto">
+        <source src="win.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="loss-sound" preload="auto">
+        <source src="loss.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="balance.js"></script>
+    <script src="mines.js"></script>
+</body>
+</html> 
