@@ -84,20 +84,40 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Calculate the maximum payout multiplier based on mines count
     function calculateMaxMultiplier(mines) {
-        // Formula: (25 / (25 - mines)) * 0.99 (1% house edge)
-        // This gives a fair RTP of 99%
+        // Formula: (25 / (25 - mines)) * 0.97 (3% house edge)
+        // This gives a fair RTP of 97%
         const fairMultiplier = 25 / (25 - mines);
-        return fairMultiplier * 0.99;
+        return fairMultiplier * 0.97;
     }
     
     // Calculate the current multiplier based on gems revealed
     function calculateCurrentMultiplier(mines, gemsRevealed) {
         if (gemsRevealed === 0) return 1.0;
         
-        // Formula: (25 / (25 - mines)) * (25 - mines - gemsRevealed) / (25 - gemsRevealed) * 0.99
-        const fairMultiplier = 25 / (25 - mines);
-        const progressMultiplier = (25 - mines - gemsRevealed) / (25 - gemsRevealed);
-        return fairMultiplier / progressMultiplier * 0.99;
+        // New formula that ensures house edge at all stages
+        // For the first gem, we need a low multiplier that still gives house edge
+        const baseMultiplier = 25 / (25 - mines) * 0.97; // 3% house edge
+        
+        // The multiplier increases exponentially as more gems are revealed
+        // We use the ratio of remaining gems to initial gems as the base
+        const totalGems = 25 - mines;
+        const remainingGems = totalGems - gemsRevealed;
+        const progressFactor = totalGems / remainingGems;
+        
+        // Apply an exponential growth factor that starts small
+        // This ensures first gem has minimal payout increase
+        let multiplier;
+        
+        if (gemsRevealed === 1) {
+            // For first gem, use a very conservative multiplier just slightly above 1
+            // This ensures house edge remains when player immediately cashes out
+            multiplier = 1 + (baseMultiplier - 1) * 0.15;
+        } else {
+            // For subsequent gems, the multiplier grows more significantly
+            multiplier = baseMultiplier * Math.pow(progressFactor, 0.8);
+        }
+        
+        return multiplier;
     }
     
     // Start a new game

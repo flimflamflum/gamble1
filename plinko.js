@@ -150,13 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create walls with increased bounciness to push balls back to center
         const wallOptions = {
             isStatic: true,
-            restitution: 0.8,  // Make walls more bouncy
+            restitution: 0.95,  // Increased bounciness from 0.8 to 0.95
+            friction: 0.01,     // Reduced friction to prevent sticking
             render: { fillStyle: '#1e3643' }
         };
 
-        // Add walls
-        const leftWall = Matter.Bodies.rectangle(0, CANVAS_HEIGHT/2, 20, CANVAS_HEIGHT, wallOptions);
-        const rightWall = Matter.Bodies.rectangle(CANVAS_WIDTH, CANVAS_HEIGHT/2, 20, CANVAS_HEIGHT, wallOptions);
+        // Add walls with improved physics
+        const leftWall = Matter.Bodies.rectangle(-2, CANVAS_HEIGHT/2, 20, CANVAS_HEIGHT, wallOptions);
+        const rightWall = Matter.Bodies.rectangle(CANVAS_WIDTH+2, CANVAS_HEIGHT/2, 20, CANVAS_HEIGHT, wallOptions);
         state.walls = [leftWall, rightWall];
 
         // Create pins
@@ -1325,21 +1326,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add timestamp to detect old balls
         ball.createdAt = Date.now();
         
-        // Apply different central force based on risk level - all reduced by ~15%
+        // Apply different central force based on risk level - all reduced by ~60%
         let centralForceMultiplier;
         if (state.risk === 'low') {
-            centralForceMultiplier = 0.00017; // Reduced from 0.0002
+            centralForceMultiplier = 0.00008; // Reduced by ~60%
         } else if (state.risk === 'medium') {
-            centralForceMultiplier = 0.0015; // Reduced from 0.0018
+            centralForceMultiplier = 0.0006; // Reduced by ~60% 
         } else {
-            centralForceMultiplier = 0.0016; // Reduced from 0.0020
+            centralForceMultiplier = 0.0007; // Reduced by ~60%
         }
         
         // Calculate and apply initial force
         const centralForce = (CANVAS_WIDTH/2 - startX) * centralForceMultiplier;
         Matter.Body.applyForce(ball, ball.position, { 
             x: centralForce, 
-            y: 0.001  // Increase downward force slightly to ensure movement
+            y: 0.0015  // Increased downward force to prevent balls from getting stuck
         });
         
         // Add dynamic property to make tracking easier
@@ -1366,18 +1367,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const distanceFromCenter = Math.abs(ball.position.x - centerX);
             
             // Calculate force multiplier based on distance
-            // The further from center, the stronger the pull, but reduced overall
             let forceFactor;
             
             if (state.risk === 'low') {
-                // Low force that only kicks in further from center - reduced by ~20%
-                if (distanceFromCenter < 60) { // Increased from 50 to allow more freedom
-                    forceFactor = 0; // No pull when close to center
-                } else if (distanceFromCenter < 150) {
-                    // Linear increase from 0 to max, but reduced
-                    forceFactor = 0.000032 * ((distanceFromCenter - 60) / 90); // Reduced from 0.00004
+                // Low risk - lighter center pull with bigger dead zone
+                if (distanceFromCenter < 120) {
+                    forceFactor = 0; // No pull when close to center - increased dead zone
+                } else if (distanceFromCenter < 200) {
+                    // Linear increase but much gentler
+                    forceFactor = 0.000015 * ((distanceFromCenter - 120) / 80);
                 } else {
-                    forceFactor = 0.000032; // Reduced max force from 0.00004
+                    forceFactor = 0.000015; // Reduced max force by ~50%
                 }
             } else if (state.risk === 'medium') {
                 // Check if the ball is in a position that might lead to 3x or 5x multipliers
@@ -1390,44 +1390,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     potentialMultiplier = multipliers[potentialSlotIndex];
                 }
                 
-                // If the ball might land in a 3x or 5x slot, apply even weaker pull
+                // Significantly reduced forces for all cases
                 if (potentialMultiplier === 3 || potentialMultiplier === 5) {
-                    if (distanceFromCenter < 60) { // Increased from 50
-                        forceFactor = 0.000004; // Further reduced from 0.000005
-                    } else if (distanceFromCenter < 180) { // Increased from 170
-                        // Very mild quadratic increase, further reduced
-                        forceFactor = 0.000004 + (0.000025 * Math.pow((distanceFromCenter - 60) / 120, 2)); // Reduced from 0.00003
+                    if (distanceFromCenter < 100) {
+                        forceFactor = 0.000002; // 50% reduction
+                    } else if (distanceFromCenter < 200) {
+                        forceFactor = 0.000002 + (0.000012 * Math.pow((distanceFromCenter - 100) / 100, 2));
                     } else {
-                        forceFactor = 0.000035; // Reduced from 0.00004
+                        forceFactor = 0.000017; // ~50% reduction
                     }
                 } else if (potentialMultiplier >= 10) {
-                    // Allow slightly higher chance for 10x+ multipliers by reducing force by 30%
-                    if (distanceFromCenter < 40) { // Increased from 30
-                        forceFactor = 0.000015; // Reduced from 0.00002
-                    } else if (distanceFromCenter < 160) { // Increased from 150
-                        // Reduced quadratic increase
-                        forceFactor = 0.000015 + (0.00006 * Math.pow((distanceFromCenter - 40) / 120, 2)); // Reduced from 0.00008
+                    if (distanceFromCenter < 80) {
+                        forceFactor = 0.000008; // ~50% reduction
+                    } else if (distanceFromCenter < 180) {
+                        forceFactor = 0.000008 + (0.000025 * Math.pow((distanceFromCenter - 80) / 100, 2));
                     } else {
-                        forceFactor = 0.00007; // Reduced from 0.0001
+                        forceFactor = 0.000035; // 50% reduction
                     }
                 } else {
-                    // Standard medium force with graduated effect for other regions, reduced by ~25%
-                    if (distanceFromCenter < 35) { // Increased from 30
-                        forceFactor = 0.000015; // Reduced from 0.00002
-                    } else if (distanceFromCenter < 160) { // Increased from 150
-                        // Quadratic increase but reduced
-                        forceFactor = 0.000015 + (0.00006 * Math.pow((distanceFromCenter - 35) / 125, 2)); // Reduced from 0.00008
+                    // Standard medium force with larger dead zone
+                    if (distanceFromCenter < 70) {
+                        forceFactor = 0.000007; // ~50% reduction
+                    } else if (distanceFromCenter < 180) {
+                        forceFactor = 0.000007 + (0.000025 * Math.pow((distanceFromCenter - 70) / 110, 2));
                     } else {
-                        forceFactor = 0.000075; // Reduced from 0.0001
+                        forceFactor = 0.000035; // ~50% reduction
                     }
                 }
             } else {
-                // High risk - still strong pull but reduced by ~15%
-                if (distanceFromCenter < 25) { // Increased from 20
-                    forceFactor = 0.000035; // Reduced from 0.00004
-                } else if (distanceFromCenter < 110) { // Increased from 100
-                    // Cubic increase but reduced
-                    forceFactor = 0.000035 + (0.0001 * Math.pow((distanceFromCenter - 25) / 85, 3)); // Reduced from 0.00012
+                // High risk - still has pull but significantly reduced
+                if (distanceFromCenter < 50) {
+                    forceFactor = 0.000017; // ~50% reduction
+                } else if (distanceFromCenter < 150) {
+                    forceFactor = 0.000017 + (0.000045 * Math.pow((distanceFromCenter - 50) / 100, 3));
                     
                     // If ball is heading toward a high multiplier (9x and above), further reduce force
                     const slotWidth = CANVAS_WIDTH / multipliers.length;
@@ -1435,11 +1430,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (potentialSlotIndex >= 0 && potentialSlotIndex < multipliers.length) {
                         const potentialMultiplier = multipliers[potentialSlotIndex];
                         if (potentialMultiplier >= 9) {
-                            forceFactor *= 0.85; // 15% reduction for high multipliers
+                            forceFactor *= 0.7; // 30% reduction for high multipliers (increased from 15%)
                         }
                     }
                 } else {
-                    forceFactor = 0.00014; // Reduced from 0.00016
+                    forceFactor = 0.000065; // ~50% reduction
                 }
             }
             
@@ -1447,8 +1442,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const pullDirection = ball.position.x > centerX ? -1 : 1; // Pull toward center
             const forceMagnitude = distanceFromCenter * forceFactor;
             
+            // Prevent excessively high forces by capping the maximum force
+            const cappedForceMagnitude = Math.min(forceMagnitude, 0.0006);
+            
             Matter.Body.applyForce(ball, ball.position, {
-                x: forceMagnitude * pullDirection,
+                x: cappedForceMagnitude * pullDirection,
                 y: 0
             });
         });
@@ -1460,20 +1458,30 @@ document.addEventListener('DOMContentLoaded', () => {
         
         state.activeBalls.forEach(ball => {
             // Check if ball has no/minimal velocity for too long (stuck)
-            if (!ball.stuckSince && Math.abs(ball.velocity.y) < 0.2 && ball.position.y > CANVAS_HEIGHT - 150) {
+            // More lenient velocity threshold and faster detection of stuck balls
+            if (!ball.stuckSince && Math.abs(ball.velocity.y) < 0.3 && ball.position.y > CANVAS_HEIGHT - 200) {
                 ball.stuckSince = currentTime;
             }
             
             // If ball is moving again, reset the stuck timer
-            if (ball.stuckSince && Math.abs(ball.velocity.y) > 0.5) {
+            if (ball.stuckSince && Math.abs(ball.velocity.y) > 0.7) {
                 ball.stuckSince = null;
+            }
+            
+            // Apply a gentle nudge to stuck balls to get them moving again
+            if (ball.stuckSince && currentTime - ball.stuckSince > 800) { // Reduced from 2000ms to 800ms
+                // Apply random impulse to unstick the ball
+                Matter.Body.applyForce(ball, ball.position, {
+                    x: (Math.random() - 0.5) * 0.002,
+                    y: 0.003
+                });
             }
         });
         
         // Find balls that have reached the bottom or have been stuck for too long
         const bottomBalls = state.activeBalls.filter(ball => 
             ball.position.y > CANVAS_HEIGHT - 30 || 
-            (ball.stuckSince && currentTime - ball.stuckSince > 2000) // Ball stuck for more than 2 seconds
+            (ball.stuckSince && currentTime - ball.stuckSince > 1500) // Reduced from 2000ms to 1500ms
         );
         
         // Process each ball that reached the bottom or is stuck

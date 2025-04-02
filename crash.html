@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crash Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="crash.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <a href="index.html" class="logo">Virtual Casino</a>
+            <div class="nav-right">
+                <div class="balance-display">
+                    <div class="balance-amount">
+                        <span id="header-balance">10000</span>
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <button id="reset-balance" class="reset-balance-btn">
+                        <i class="fa-solid fa-rotate"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="game-container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- Game Mode Toggle -->
+            <div class="mode-toggle">
+                <button id="manual-button" class="active">Manual</button>
+                <button id="auto-button">Auto</button>
+            </div>
+
+            <!-- Bet Amount -->
+            <div class="bet-controls">
+                <label>Amount</label>
+                <div class="bet-amount">
+                    <input type="number" id="bet-amount" value="100">
+                    <div class="bet-buttons">
+                        <button id="half-bet">½</button>
+                        <button id="double-bet">2×</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cashout At (Auto Mode) -->
+            <div class="auto-cashout-controls hidden" id="auto-cashout-container">
+                <label>Cashout At</label>
+                <div class="auto-cashout-input">
+                    <input type="number" id="auto-cashout-value" value="2.00" min="1.01" step="0.01">
+                </div>
+            </div>
+
+            <!-- Net Gain on Win -->
+            <div class="net-gain">
+                <label>Net Gain on Win</label>
+                <div class="net-gain-amount" id="net-gain-display">0.00</div>
+            </div>
+
+            <!-- Game Button -->
+            <button id="bet-button" class="bet-button">Play Next Round</button>
+            <button id="cashout-button" class="cashout-button" disabled>Cashout</button>
+        </div>
+
+        <!-- Crash Game Display -->
+        <div class="crash-display">
+            <!-- Chart Container -->
+            <div class="crash-chart-container" id="crash-chart-container">
+                <canvas id="crash-chart"></canvas>
+                <div class="crash-result hidden" id="crash-result">1.41×</div>
+                
+                <!-- Network Status -->
+                <div class="network-status">
+                    Network Status <span class="network-indicator"></span>
+                </div>
+            </div>
+            
+            <!-- History Bar -->
+            <div class="crash-history">
+                <h3>Previous Rounds</h3>
+                <div class="history-items" id="history-items">
+                    <!-- History items will be added here dynamically from actual gameplay -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="tick-sound" preload="auto">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="win-sound" preload="auto">
+        <source src="win.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="crash-sound" preload="auto">
+        <source src="loss.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="balance.js"></script>
+    <script src="crash.js"></script>
+</body>
+</html> 
