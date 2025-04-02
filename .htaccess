@@ -1,0 +1,16 @@
+# Remove .html extension from URLs
+RewriteEngine On
+
+# If the requested filename is not a directory,
+# and the request doesn't already have .html at the end,
+# and the file with .html extension exists
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.html$
+RewriteCond %{REQUEST_FILENAME}.html -f
+
+# Rewrite to add .html internally without changing the URL
+RewriteRule ^(.*)$ $1.html [L]
+
+# Redirect URLs with .html to clean URLs
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^\ ]+)\.html
+RewriteRule ^(.*)\.html$ /$1 [R=301,L] 
