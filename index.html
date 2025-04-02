@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Big Wins Casino</title>
+    <title>The Big Win Casino</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,6 +16,93 @@
         }
         main {
             flex: 1;
+        }
+        
+        /* Info Button Styles */
+        .info-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent-color, #3498db);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: none;
+            z-index: 10;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .info-button:hover {
+            transform: scale(1.1);
+            background-color: #2980b9;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: #666;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .modal-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .modal-body {
+            color: #666;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -94,6 +181,34 @@
         </section>
     </main>
 
+    <!-- Info Button -->
+    <button class="info-button" id="info-button">
+        <i class="fa-solid fa-info"></i>
+    </button>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">
+                <i class="fa-solid fa-times"></i>
+            </button>
+            <h3 class="modal-title">About The Big Win Casino</h3>
+            <div class="modal-body">
+                <p>Welcome to The Big Win Casino, your premier destination for online casino games!</p>
+                <p>At The Big Win Casino, we offer a variety of exciting games including:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Dice - Test your luck with our virtual dice game</li>
+                    <li>Plinko - Drop balls and watch them bounce for big multipliers</li>
+                    <li>Mines - Navigate through a field of mines to find precious gems</li>
+                    <li>Crash - Watch the multiplier rise and cash out before it crashes</li>
+                </ul>
+                <p>Our platform uses virtual currency only and is intended for entertainment purposes. Start with 10,000 free coins and reset your balance anytime!</p>
+                <p>Enjoy the thrill of gambling without the risk of losing real money.</p>
+                <p style="margin-top: 20px; font-style: italic; border-top: 1px solid #eee; padding-top: 15px;">Bear in mind this website is just coding practice for me and not meant to be taken seriously. Enjoy!</p>
+            </div>
+        </div>
+    </div>
+
     <script src="balance.js"></script>
     <script>
         // Simple script to simulate random player count
@@ -107,6 +222,33 @@
         // Update initially and every 30 seconds
         updatePlayerCount();
         setInterval(updatePlayerCount, 30000);
+
+        // Info modal functionality
+        const infoButton = document.getElementById('info-button');
+        const infoModal = document.getElementById('info-modal');
+        const modalClose = document.getElementById('modal-close');
+
+        infoButton.addEventListener('click', () => {
+            infoModal.classList.add('active');
+        });
+
+        modalClose.addEventListener('click', () => {
+            infoModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside of it
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) {
+                infoModal.classList.remove('active');
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && infoModal.classList.contains('active')) {
+                infoModal.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html> 
