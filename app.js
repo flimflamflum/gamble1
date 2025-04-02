@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateUI() {
         // Get current balance
-        const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+        const currentBalance = parseInt(localStorage.getItem('userBalance')) || 0;
         
         // Ensure bet amount doesn't exceed balance
         if (state.betAmount > currentBalance) {
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function updateBetAmount() {
             let value = parseFloat(betAmountInput.value);
             if (isNaN(value) || value < 1) value = 1;
-            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 0;
             if (value > currentBalance) value = currentBalance;
             state.betAmount = Math.floor(value); // Ensure whole number
             
@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         doubleBetButton.addEventListener('click', () => {
-            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 0;
             state.betAmount = Math.min(currentBalance, Math.floor(state.betAmount * 2));
             
             // Calculate profit directly
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         maxBetButton.addEventListener('click', () => {
-            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 0;
             if (currentBalance > 0) {
                 state.betAmount = Math.floor(currentBalance); // Ensure whole number
                 
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Get current balance
-            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 10000;
+            const currentBalance = parseInt(localStorage.getItem('userBalance')) || 0;
 
             // Check if enough balance for bet
             if (state.betAmount > currentBalance) {
